@@ -1,0 +1,4 @@
+requests
+python-dotenv
+oauthlib
+requests_oauthlib

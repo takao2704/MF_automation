@@ -1,0 +1,19 @@
+{
+  "ex_transaction": {
+    "remark": "電車代（東京→大阪）",
+    "recognized_at": "2024-12-01",
+    "value": 1000,
+    "memo": "2024年12月経費申請用",
+    "report_number": "",
+    "jpyrate": 1.0,
+    "currency": "JPY",
+    "use_custom_jpy_rate": false,
+    "ex_item_id": "svStdCnC5cVghDib7uJACA",
+    "dr_excise_id": "RgCz_0-_NktCGAF3o4xNTA",
+    "dept_id": "P8EYuTfTRlCzpmhJxLzciw",
+    "project_code_id": null,
+    "project_id": null,
+    "cr_item_id": "Ij4fDogDW4xfrBtMupArGQ",
+    "cr_sub_item_id": "dhNueknVU8xcK-uyQ3tc4w"
+  }
+}

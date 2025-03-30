@@ -1,0 +1,16 @@
+{
+  "ex_transaction": {
+    "recognized_at": "2024-12-01",
+    "value": 504,
+    "remark": "元赤坂オフィス (平和台(東京都)~赤坂見附 往復電車代)",
+    "memo": "平和台(東京都) -> 新宿三丁目 -> 赤坂見附",
+    "currency": "JPY",
+    "jpyrate": 1.0,
+    "use_custom_jpy_rate": false,
+    "ex_item_id": "svStdCnC5cVghDib7uJACA",
+    "dr_excise_id": "RgCz_0-_NktCGAF3o4xNTA",
+    "dept_id": "P8EYuTfTRlCzpmhJxLzciw",
+    "cr_item_id": "Ij4fDogDW4xfrBtMupArGQ",
+    "cr_sub_item_id": "dhNueknVU8xcK-uyQ3tc4w"
+  }
+}
