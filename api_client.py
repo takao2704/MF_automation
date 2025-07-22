@@ -1,5 +1,6 @@
 import json
 import requests
+from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 from auth import MFAuth
 from config import MF_API_BASE_URL, MF_OFFICE_ID
 
@@ -18,9 +19,9 @@ class MFExpenseClient:
         self.base_url = MF_API_BASE_URL
         self.office_id = MF_OFFICE_ID
     
-    def _request(self, method, endpoint, params=None, data=None, json_data=None):
+    def _request(self, method, endpoint, params=None, data=None, json_data=None, retry_count=0):
         """
-        APIリクエストを送信
+        APIリクエストを送信（改善版）
         
         Args:
             method: HTTPメソッド
@@ -28,6 +29,7 @@ class MFExpenseClient:
             params: URLパラメータ
             data: リクエストボディ（フォームデータ）
             json_data: リクエストボディ（JSON）
+            retry_count: リトライ回数
             
         Returns:
             レスポンスのJSONデータ
@@ -47,14 +49,40 @@ class MFExpenseClient:
             )
             response.raise_for_status()
             return response.json()
+            
+        except TokenExpiredError as e:
+            # TokenExpiredErrorを明示的にキャッチ
+            print(f"トークンの有効期限が切れています。リフレッシュを試行します...")
+            if retry_count < 1:  # 1回だけリトライ
+                if self.auth.refresh_token():
+                    print("トークンのリフレッシュが成功しました。")
+                    self.session = self.auth.get_session()
+                    return self._request(method, endpoint, params, data, json_data, retry_count + 1)
+                else:
+                    print("トークンのリフレッシュに失敗しました。再認証が必要です。")
+                    raise Exception("トークンのリフレッシュに失敗しました。再認証を行ってください。")
+            else:
+                print("リトライ回数を超過しました。")
+                raise Exception("トークンエラーのリトライ回数を超過しました。")
+                
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 401:
-                # トークンの期限切れの場合はリフレッシュを試みる
-                if self.auth.refresh_token():
-                    self.session = self.auth.get_session()
-                    return self._request(method, endpoint, params, data, json_data)
+                # 401エラーの場合もトークンリフレッシュを試行
+                print(f"401エラーが発生しました。トークンリフレッシュを試行します...")
+                if retry_count < 1:  # 1回だけリトライ
+                    if self.auth.refresh_token():
+                        print("トークンのリフレッシュが成功しました。")
+                        self.session = self.auth.get_session()
+                        return self._request(method, endpoint, params, data, json_data, retry_count + 1)
+                    else:
+                        print("トークンのリフレッシュに失敗しました。")
+            
             print(f"APIエラー: {e}")
             print(f"レスポンス: {e.response.text}")
+            raise
+            
+        except Exception as e:
+            print(f"予期しないエラーが発生しました: {e}")
             raise
     
     def get_offices(self):
